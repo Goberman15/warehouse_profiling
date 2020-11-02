@@ -10,51 +10,37 @@ const cabinetLevel = weight => {
 
 const shelfLevel = weight => {
     if (weight >= 200) {
-        return 'A';
+        return 'Level A';
     } else if (weight >= 160) {
-        return 'B';
+        return 'Level B';
     } else if (weight >= 128) {
-        return 'C';
+        return 'Level C';
     } else if (weight >= 102) {
-        return 'D';
+        return 'Level D';
     } else if (weight >= 82) {
-        return 'E';
+        return 'Level E';
     } else if (weight >= 66) {
-        return 'F';
-    } else if (weight >= 52) {
-        return 'G';
-    } else if (weight >= 42) {
-        return 'A';
-    } else if (weight >= 34) {
-        return 'B';
-    } else if (weight >= 27) {
-        return 'C';
-    } else if (weight >= 21) {
-        return 'D';
-    } else if (weight >= 17) {
-        return 'E';
-    } else if (weight >= 14) {
-        return 'F';
-    } else if (weight >= 11) {
-        return 'G';
-    }
+        return 'Level F';
+    } else {
+        return 'Level G';
+    } 
 }
 
 const rackLevel = weight => {
     if (weight >= 1600) {
-        return '1';
+        return 'Level 1';
     } else if (weight >= 1280) {
-        return '2'
+        return 'Level 2'
     } else if (weight >= 1120) {
-        return '3'
+        return 'Level 3'
     } else if (weight >= 960) {
-        return '4'
+        return 'Level 4'
     } else if (weight >= 800) {
-        return '5'
+        return 'Level 5'
     } else if (weight >= 640) {
-        return '6'
+        return 'Level 6'
     } else if (weight >= 480) {
-        return '7'
+        return 'Level 7'
     }
 }
 

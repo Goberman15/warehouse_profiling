@@ -1,0 +1,56 @@
+.fullscreen {
+    width: 100%;
+    min-height: calc(100% - 200px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.full-width {
+    width: 100%;
+}
+
+.input-title {
+    margin-bottom: 10px;
+    font-size: 40px;
+    font-weight: 600;
+}
+
+input {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type=number] {
+    -moz-appearance: textfield;
+}
+
+input[type=checkbox] {
+    -ms-transform: scale(2); /* IE */
+    -moz-transform: scale(2); /* FF */
+    -webkit-transform: scale(2); /* Safari and Chrome */
+    -o-transform: scale(2); /* Opera */
+    transform: scale(2);
+    padding: 10px;
+}
+
+.check-title {
+    font-size: 28px;
+    margin-left: 20px;
+}
+
+.check-box {
+    position: relative !important;
+    top: 14px;
+}
+
+.btn-choice {
+    margin-bottom: 25px;
+}

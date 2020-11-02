@@ -1,178 +1,162 @@
-import React, { useState } from 'react';
-import { dimensionCategorizer } from '../helpers/dimension.js';
-import { handlingCategorizer } from '../helpers/handling.js';
-import { locationCategorizer } from '../helpers/location.js';
-import { levelCategorizer} from '../helpers/level.js';
+import React from 'react';
+import CargoType from './CargoType.jsx';
+import WarehouseType from './WarehouseType.jsx';
+import StorageLocation from './StorageLocation.jsx';
+import Dimension from './Dimension.jsx';
+import Quantity from './Quantity.jsx';
+import Weight from './Weight.jsx';
+import server from '../api';
+import { useDispatch, useSelector } from 'react-redux';
+import { resetInput, setStep } from '../store/action.js';
+import { stackPerBin } from '../helpers/stackPerBin.js';
+import '../styles/Form.css';
+import { useHistory } from 'react-router-dom';
+import AdditionalServices from './AdditionalServices.jsx';
 
 const Form = () => {
-    // Input
-    const [length, setLength] = useState(0);
-    const [width, setWidth] = useState(0);
-    const [height, setHeight] = useState(0);
-    const [grossWeight, setGrossWeight] = useState(0);
-    const [monthlyStoring, setMonthlyStoring] = useState(0);
-    const [type, setType] = useState("");
-    // Output
-    const constanta = 0.453592;
-    const [volume, setVolume] = useState(0);
-    const [areaAllocation, setAreaAllocation] = useState(0);
-    const [dimension, setDimension] = useState("");
-    const [handling, setHandling] = useState("");
-    const [location, setLocation] = useState("");
-    const [level, setLevel] = useState("");
-    const [done, setDone] = useState(false);
+    const dispatch = useDispatch();
+    let history = useHistory();
+    const step = useSelector(state => state.step);
+    const cargoType = useSelector(state => state.cargoType);
+    const cargoLength = useSelector(state => state.cargoLength);
+    const warehouseType = useSelector(state => state.warehouseType);
+    const storageLocation = useSelector(state => state.storageLocation);
+    const width = useSelector(state => state.width);
+    const height = useSelector(state => state.height)
+    const diameter = useSelector(state => state.diameter);
+    const quantity = useSelector(state => state.quantity);
+    const weight = useSelector(state => state.weight);
+    const wrapping = useSelector(state => state.wrapping);
+    const stickerLabel = useSelector(state => state.stickerLabel);
+    const cartId = useSelector(state => state.cartId);
 
-    const inputValueChange = event => {
-        const { name, value } = event.target;
+    const noStackBin = ['Tyres B (Non Stack)', 'Parts', 'Chain', 'Heavy Equipment']
+    const calculatePallet = ['Parts', 'Pallet', 'Box', 'Chain'];
+    const addService = ['Parts', 'Box', 'Pallet']
 
-        switch (name) {
-            case "length":
-                setLength(value);
-                break;
-            case "width":
-                setWidth(value);
-                break;
-            case "height":
-                setHeight(value);
-                break;
-            case "weight":
-                setGrossWeight(value);
-                break;
-            case "type":
-                setType(value);
-                break;
-            case "monthly":
-                setMonthlyStoring(value);
-                break;
-            default:
-                break;
-        }
+    const changeStep = newStep => {
+        const payload = {
+            step: newStep
+        };
+
+        dispatch(setStep(payload));
     }
 
-    const processInput = () => {
-        const area = ((length * width)/1000000)*monthlyStoring
-        const volumeQty = ((length * width * height)/1000000)*monthlyStoring;
-        const weight = constanta * grossWeight;
-        const dimensionCategory = dimensionCategorizer((volumeQty * 1000000)/monthlyStoring);
-        const handlingCategory = handlingCategorizer(weight);
-        const locationCategory = locationCategorizer(volumeQty);
-        
-        setDimension(dimensionCategory);
-        setVolume(volumeQty);
-        setAreaAllocation(area);
-        setHandling(handlingCategory);
-        setLocation(locationCategory);
-        
-        if (location !== 'Floor') {
-            const levelCategory = levelCategorizer(weight, locationCategory)
-            setLevel(levelCategory);
+    const calculateInput = () => {
+        const area = areaCalculation();
+        let totalArea;
+        const volume = volumeCalculation(area);
+        let stackBin;
+        let totalPallet;
+
+        if (!noStackBin.includes(cargoType)) {
+            stackBin =  stackPerBin(cargoType, height, diameter);
+
+            totalArea = (area * quantity) / stackBin;
         } else {
-            setLevel('-');
+            totalArea = area * quantity;
         }
 
-        setLength(0);
-        setHeight(0);
-        setWidth(0);
-        setGrossWeight(0);
-        setType("");
-        setMonthlyStoring(0);
-        setDone(true);
+        if (calculatePallet.includes(cargoType)) {
+            totalPallet = Math.ceil(totalArea / 1.44)
+        }
+
+        server.post('/warehouses', {
+            cargoType,
+            warehouseType,
+            storageLocation,
+            quantity,
+            totalArea,
+            volume,
+            weight,
+            stackBin,
+            totalPallet,
+            diameter,
+            wrapping,
+            stickerLabel,
+            cartId
+        })
+        .then(({ data }) => {
+            console.log(data);
+            dispatch(resetInput());
+
+            console.log(cartId);
+
+            history.push(`/list-item/${cartId}`);
+        })
+        .catch(err => {
+            console.error(err);
+        })
+        // .finally(() => {
+
+        // })
     }
 
-    const restart = () => {
-        setDone(false);
+    const volumeCalculation = (area) => {
+        if (cargoType === 'Steel Bars' || cargoType === 'Pipe') {
+            return (((Math.PI/4) * (diameter**2) * cargoLength)/1000000);
+        } else {
+            return (area * (height/100));
+        }
+    }
+
+    const areaCalculation = () => {
+        if(cargoType === 'Tyres A (Stack Position)') {
+            return (((Math.PI/4)*(diameter**2))/10000);
+        } else if (cargoType === 'Tyres B (Non Stack)') {
+            return ((diameter * height)/10000);
+        } else if (cargoType === 'Pipe' || cargoType === 'Steel Bars') {
+            return ((cargoLength * diameter)/10000);
+        } else {
+            return((cargoLength*width)/10000);
+        }
     }
 
     return (
-        <div className="container p-5">
-            {!done &&
-            <>
-                <form>
-                    <div className="form-group">
-                        <div className="row">
-                            <div className="col">
-                                <label htmlFor="length">Length</label>
-                                <input
-                                    type="number"
-                                    name="length"
-                                    id="length"
-                                    className="form-control"
-                                    value={ length }
-                                    onChange={(event) => inputValueChange(event)}
-                                />
-                            </div>
-                            <div className="col">
-                                <label htmlFor="width">Width</label>
-                                <input
-                                    type="number"
-                                    name="width"
-                                    id="width"
-                                    className="form-control"
-                                    value={ width }
-                                    onChange={(event) => inputValueChange(event)}
-                                />
-                            </div>
-                            <div className="col">
-                                <label htmlFor="height">Height</label>
-                                <input
-                                    type="number"
-                                    name="height"
-                                    id="height"
-                                    className="form-control"
-                                    value={ height }
-                                    onChange={(event) => inputValueChange(event)}
-                                />
-                            </div>
-                        </div>
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="weight">Gross Weight</label>
-                        <input type="number" name="weight" id="weight" className="form-control" placeholder="0" min="0" value={ grossWeight } onChange={(event) => inputValueChange(event)}/>
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="type">Type</label>
-                        <select
-                            name="type"
-                            id="type"
-                            className="custom-select"
-                            value={ type }
-                            onChange={(event) => inputValueChange(event)}
-                        >
-                            <option value="" disabled>---Select Type---</option>
-                            <option value="Ban">Ban</option>
-                            <option value="Pallette">Pallette</option>
-                            <option value="Parts">Parts</option>
-                        </select>
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="monthly">Monthly Storing</label>
-                        <input
-                            type="number"
-                            name="monthly"
-                            id="monthly"
-                            className="form-control"
-                            placeholder="0"
-                            min="0"
-                            value={ monthlyStoring }
-                            onChange={(event) => inputValueChange(event)}
-                        />
-                    </div>
-                </form>
-                <button className="btn btn-primary btn-lg btn-block" onClick={ processInput }>Submit</button>
-            </>
+        <div className="fullscreen">
+            {step === 1 &&
+                <CargoType />
             }
-            {done &&
-            <div className="container mt-3 d-flex flex-column justify-content-center align-items-between">
-                <h4 className="mb-3">Area Allocation: { areaAllocation } m2</h4>
-                <h4 className="mb-3">Volume: { volume } m3</h4>
-                <h4 className="mb-3">Dimension: { dimension }</h4>
-                <h4 className="mb-3">Handling: { handling }</h4>
-                <h4 className="mb-3">Location: { location }</h4>
-                <h4 className="mb-3">Level: Level { level }</h4>
-
-                <button className="btn btn-primary btn-lg" onClick={ restart }>Back to Input</button>
+            {step === 2 &&
+                <WarehouseType />
+            }
+            {step === 3 &&
+                <StorageLocation />
+            }
+            {step === 4 &&
+                <Dimension />
+            }
+            {step === 5 &&
+                <Quantity />
+            }
+            {step === 6 &&
+                <Weight />
+            }
+            {step === 7 &&
+                <AdditionalServices />
+            }
+            <div className="d-flex container mt-2">
+                {step !== 1 &&
+                <button
+                    className="btn btn-success mr-auto px-5"
+                    onClick={() => changeStep(step-1)}
+                >Back</button>
+                }
+                {((step !== 7 && addService.includes(cargoType) && warehouseType === 'NON-PLB')
+                 || (step !== 6 && (!addService.includes(cargoType) || warehouseType !== 'NON-PLB'))) &&
+                <button
+                    className="btn btn-success ml-auto px-5"
+                    onClick={() => changeStep(step+1)}
+                >Next</button>
+                }
+                {((step === 7 && addService.includes(cargoType) && warehouseType === 'NON-PLB') 
+                 || (step === 6 && (!addService.includes(cargoType) || warehouseType !== 'NON-PLB'))) &&
+                <button
+                    className="btn btn-success ml-auto px-5"
+                    onClick={ calculateInput }
+                >Submit</button>
+                }
             </div>
-            }
         </div>
     );
 }

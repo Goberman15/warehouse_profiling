@@ -1,5 +1,5 @@
 export function locationCategorizer(volume) {
-    if (volume >= 3.213) {
+    if (volume >= 1) {
         return "Floor";
     } else if (volume >= 0.02) {
         return "Racking";

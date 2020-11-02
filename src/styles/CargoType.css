@@ -1,0 +1,31 @@
+.cargo-type-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    align-content: flex-start;
+}
+
+.cargo-type-box {
+    width: 200px;
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #007bff;
+    margin: 10px;
+    border-radius: 10px;
+    color: #007BFF;
+}
+
+.cargo-type-box:hover, .cargo-type-box.selected {
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+}
+
+.cargo-type-name {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 0;
+}
