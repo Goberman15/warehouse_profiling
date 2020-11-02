@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   BrowserRouter as Router,
+  Redirect,
   Route,
   Switch
 } from 'react-router-dom';
@@ -8,10 +9,12 @@ import Form from './components/Form.jsx';
 import Navbar from './components/Navbar.jsx';
 import CartList from './components/CartList.jsx';
 import ItemList from './components/ItemList.jsx';
-import XForm from './components/xForm.jsx';
 import './App.css';
+import { useSelector } from 'react-redux';
 
 function App() {
+  const cartId = useSelector(state => state.cartId);
+
   return (
     <div className="App">
       <Router>
@@ -19,9 +22,10 @@ function App() {
 
         <Switch>
           <Route exact path="/" component={CartList}/>
-          <Route path="/input" component={Form}/>
+          <Route path="/input">
+            {cartId ? <Form /> : <Redirect to="/"/>}
+          </Route>
           <Route path="/list-item/:id" component={ItemList}/>
-          <Route path="/try" component={XForm} />
         </Switch>
 
       </Router>

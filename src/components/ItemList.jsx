@@ -1,7 +1,7 @@
 import React, { useEffect, createRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useParams } from 'react-router-dom';
-import { getCartItem } from '../store/action';
+import { getCartItem, setCartId } from '../store/action';
 import accounting from 'accounting-js';
 import Pdf from "react-to-pdf";
 import '../styles/ItemList.css';
@@ -23,9 +23,13 @@ const ItemList = () => {
         dispatch(getCartItem(id));
     }, [])
 
-    useEffect(() => {
-        console.log(itemList);
-    }, [itemList])
+    const addAnotherItem = () => {
+        dispatch(setCartId({
+            cartId: id
+        }));
+
+        history.push('/input');
+    }
 
     return (
         <div className="list-item">
@@ -33,7 +37,7 @@ const ItemList = () => {
             <div className="d-flex w-100">
                 <button 
                     className="btn btn-primary mt-3 mb-3"
-                    onClick={() => history.push('/input')}
+                    onClick={addAnotherItem}
                 >Add Item to Cart</button>
             </div>
             <table className="table table-hover table-bordered" ref={ref}>
