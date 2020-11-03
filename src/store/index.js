@@ -11,6 +11,7 @@ import {
     SET_DIMENSION,
     SET_HEIGHT,
     SET_LENGTH,
+    SET_LOADING_STATUS,
     SET_QUANTITY,
     SET_STEP,
     SET_STICKER_LABEL,
@@ -24,6 +25,8 @@ import cargo from './cargoType.json';
 
 const initialState = {
     step: 1,
+    direction: '',
+    isLoading: false,
     cargoType: '',
     warehouseType: '',
     storageLocation: '',
@@ -47,10 +50,11 @@ const reducer = (state = initialState, action) => {
 
     switch(type) {
         case SET_STEP:
-            const { step } = payload;
+            const { step, direction } = payload;
             return {
                 ...state,
-                step
+                step,
+                direction
             }
         case SET_CARGO_TYPE:
             const { cargoType } = payload;
@@ -141,6 +145,12 @@ const reducer = (state = initialState, action) => {
             return {
                 ...state,
                 stickerLabel
+            }
+        case SET_LOADING_STATUS:
+            const { isLoading } = payload;
+            return {
+                ...state,
+                isLoading
             }
         case ADD_NEW_CART:
             const { cart } = payload;

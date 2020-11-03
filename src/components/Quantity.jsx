@@ -24,6 +24,7 @@ const Quantity = () => {
                 name="quantity"
                 value={ quantity }
                 onChange={ inputChangeHandler }
+                autoFocus
             />
         </div>
     );

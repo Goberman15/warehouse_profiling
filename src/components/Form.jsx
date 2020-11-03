@@ -5,13 +5,14 @@ import StorageLocation from './StorageLocation.jsx';
 import Dimension from './Dimension.jsx';
 import Quantity from './Quantity.jsx';
 import Weight from './Weight.jsx';
-import server from '../api';
-import { useDispatch, useSelector } from 'react-redux';
-import { resetInput, setStep } from '../store/action.js';
-import { stackPerBin } from '../helpers/stackPerBin.js';
-import '../styles/Form.css';
-import { useHistory } from 'react-router-dom';
 import AdditionalServices from './AdditionalServices.jsx';
+import server from '../api';
+import Loader from 'react-loader-spinner';
+import { useDispatch, useSelector } from 'react-redux';
+import { resetInput, setLoadingStatus, setStep } from '../store/action.js';
+import { stackPerBin } from '../helpers/stackPerBin.js';
+import { useHistory } from 'react-router-dom';
+import '../styles/Form.css';
 
 const Form = () => {
     const dispatch = useDispatch();
@@ -29,14 +30,16 @@ const Form = () => {
     const wrapping = useSelector(state => state.wrapping);
     const stickerLabel = useSelector(state => state.stickerLabel);
     const cartId = useSelector(state => state.cartId);
+    const isLoading = useSelector(state => state.isLoading);
 
     const noStackBin = ['Tyres B (Non Stack)', 'Parts', 'Chain', 'Heavy Equipment']
     const calculatePallet = ['Parts', 'Pallet', 'Box', 'Chain'];
     const addService = ['Parts', 'Box', 'Pallet']
 
-    const changeStep = newStep => {
+    const changeStep = (newStep, direction) => {
         const payload = {
-            step: newStep
+            step: newStep,
+            direction
         };
 
         dispatch(setStep(payload));
@@ -61,6 +64,8 @@ const Form = () => {
             totalPallet = Math.ceil(totalArea / 1.44)
         }
 
+        dispatch(setLoadingStatus({isLoading: true}));
+
         server.post('/warehouses', {
             cargoType,
             warehouseType,
@@ -80,16 +85,14 @@ const Form = () => {
             console.log(data);
             dispatch(resetInput());
 
-            console.log(cartId);
-
             history.push(`/list-item/${cartId}`);
         })
         .catch(err => {
             console.error(err);
         })
-        // .finally(() => {
-
-        // })
+        .finally(() => {
+            dispatch(setLoadingStatus({isLoading: false}));
+        })
     }
 
     const volumeCalculation = (area) => {
@@ -135,28 +138,38 @@ const Form = () => {
             {step === 7 &&
                 <AdditionalServices />
             }
-            <div className="d-flex container mt-2">
-                {step !== 1 &&
-                <button
-                    className="btn btn-success mr-auto px-5"
-                    onClick={() => changeStep(step-1)}
-                >Back</button>
-                }
-                {((step !== 7 && addService.includes(cargoType) && warehouseType === 'NON-PLB')
-                 || (step !== 6 && (!addService.includes(cargoType) || warehouseType !== 'NON-PLB'))) &&
-                <button
-                    className="btn btn-success ml-auto px-5"
-                    onClick={() => changeStep(step+1)}
-                >Next</button>
-                }
-                {((step === 7 && addService.includes(cargoType) && warehouseType === 'NON-PLB') 
-                 || (step === 6 && (!addService.includes(cargoType) || warehouseType !== 'NON-PLB'))) &&
-                <button
-                    className="btn btn-success ml-auto px-5"
-                    onClick={ calculateInput }
-                >Submit</button>
-                }
-            </div>
+            {!isLoading &&
+                <div className="d-flex container mt-2">
+                    {step !== 1 &&
+                    <button
+                        className="btn btn-success mr-auto px-5"
+                        onClick={() => changeStep(step-1, 'backward')}
+                    >Back</button>
+                    }
+                    {((step !== 7 && addService.includes(cargoType) && warehouseType === 'NON-PLB')
+                    || (step !== 6 && (!addService.includes(cargoType) || warehouseType !== 'NON-PLB'))) &&
+                    <button
+                        className="btn btn-success ml-auto px-5"
+                        onClick={() => changeStep(step+1, 'forward')}
+                    >Next</button>
+                    }
+                    {((step === 7 && addService.includes(cargoType) && warehouseType === 'NON-PLB') 
+                    || (step === 6 && (!addService.includes(cargoType) || warehouseType !== 'NON-PLB'))) &&
+                    <button
+                        className="btn btn-success ml-auto px-5"
+                        onClick={ calculateInput }
+                    >Submit</button>
+                    }
+                </div>
+            }
+            {isLoading &&
+                <Loader
+                    type="TailSpin"
+                    color="#FEC002"
+                    height={80}
+                    width={80}
+                />
+            }
         </div>
     );
 }

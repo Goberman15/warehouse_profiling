@@ -25,6 +25,7 @@ const Weight = () => {
                     name="weight"
                     value={ weight }
                     onChange={ inputChangeHandler }
+                    autoFocus
                 />
                 <div class="input-group-append">
                     <span class="input-group-text">Kg</span>

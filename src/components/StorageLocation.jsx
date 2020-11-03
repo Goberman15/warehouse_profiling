@@ -5,6 +5,7 @@ import { setStep, setStorageLocation } from '../store/action';
 const StorageLocation = () => {
     const dispatch = useDispatch();
     const step = useSelector(state => state.step);
+    const direction = useSelector(state => state.direction);
     const storageLocation = useSelector(state => state.storageLocation);
     const warehouseType = useSelector(state => state.warehouseType);
     const cargoType = useSelector(state => state.cargoType);
@@ -12,11 +13,18 @@ const StorageLocation = () => {
 
     useEffect(() => {
         if (skipStep.includes(cargoType) || (cargoType === 'Parts' && warehouseType === 'NON-PLB')) {
-            const payload = {
-                step: step+1
+            if (direction === 'forward') {
+                dispatch(setStep({
+                    step: step + 1,
+                    direction: 'forward'
+                }));
+            } else {
+                dispatch(setStep({
+                    step: step - 1,
+                    direction: 'backward'
+                }));
             }
             
-            dispatch(setStep(payload));
             dispatch(setStorageLocation({
                 storageLocation: 'Open Yard'
             }))

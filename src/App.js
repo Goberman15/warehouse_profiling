@@ -5,12 +5,13 @@ import {
   Route,
   Switch
 } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import Form from './components/Form.jsx';
 import Navbar from './components/Navbar.jsx';
 import CartList from './components/CartList.jsx';
 import ItemList from './components/ItemList.jsx';
 import './App.css';
-import { useSelector } from 'react-redux';
+import "react-loader-spinner/dist/loader/css/react-spinner-loader.css"
 
 function App() {
   const cartId = useSelector(state => state.cartId);

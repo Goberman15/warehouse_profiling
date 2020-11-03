@@ -4,11 +4,13 @@ import { useHistory } from 'react-router-dom';
 import { addNewCart, getCartList, setCartId } from '../store/action';
 import moment from 'moment-timezone';
 import accounting from 'accounting-js';
+import Loader from 'react-loader-spinner';
 import '../styles/CartList.css';
 
 const CartList = () => {
     const dispatch = useDispatch();
     const cartList = useSelector(state => state.cartList);
+    const isLoading = useSelector(state => state.isLoading);
     let history = useHistory();
 
     const addCart = () => {
@@ -44,31 +46,41 @@ const CartList = () => {
                         <th style={{width: '20%'}}>Actions</th>
                     </tr>
                 </thead>
-                <tbody>
-                    {cartList.map(cart => (
-                        <tr key={cart.id}>
-                            <td>{cart.id}</td>
-                            <td>{cart.total_items}</td>
-                            <td>{accounting.formatMoney(+cart.total_price, { symbol: 'Rp ', precision: 0, thousand: '.', decimal: ',' })}</td>
-                            <td>{moment(cart.createdAt).tz('Asia/Jakarta').format('dddd, DD MMMM YYYY')}</td>
-                            <td>
-                                <button
-                                    className="btn btn-primary btn-sm mr-2"
-                                    onClick={() => goToItemInput(cart.id)}
-                                >
-                                    <span><i className="fas fa-plus"></i>{' '}Add Item</span>
-                                </button>
-                                <button
-                                    className="btn btn-primary btn-sm ml-2"
-                                    onClick={() => history.push(`/list-item/${cart.id}`)}    
-                                >
-                                    <span><i className="fas fa-list"></i>{' '}See Items</span>
-                                </button>
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
+                {!isLoading &&
+                    <tbody>
+                        {cartList.map(cart => (
+                            <tr key={cart.id}>
+                                <td>{cart.id}</td>
+                                <td>{cart.total_items}</td>
+                                <td>{accounting.formatMoney(+cart.total_price, { symbol: 'Rp ', precision: 0, thousand: '.', decimal: ',' })}</td>
+                                <td>{moment(cart.createdAt).tz('Asia/Jakarta').format('dddd, DD MMMM YYYY')}</td>
+                                <td>
+                                    <button
+                                        className="btn btn-primary btn-sm mr-2"
+                                        onClick={() => goToItemInput(cart.id)}
+                                    >
+                                        <span><i className="fas fa-plus"></i>{' '}Add Item</span>
+                                    </button>
+                                    <button
+                                        className="btn btn-primary btn-sm ml-2"
+                                        onClick={() => history.push(`/list-item/${cart.id}`)}    
+                                    >
+                                        <span><i className="fas fa-list"></i>{' '}See Items</span>
+                                    </button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                }
             </table>
+            {isLoading &&
+                <Loader
+                    type="ThreeDots"
+                    color="#FEC002"
+                    height={80}
+                    width={80}
+                />
+            }
         </div>
     );
 }

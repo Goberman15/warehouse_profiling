@@ -5,6 +5,7 @@ import { setDiameter, setHeight, setLength, setStep, setWidth } from '../store/a
 const Dimension = () => {
     const dispatch = useDispatch();
     const step = useSelector(state => state.step);
+    const direction = useSelector(state => state.direction);
     const cargoType = useSelector(state => state.cargoType);
     const cargoLength = useSelector(state => state.cargoLength);
     const width = useSelector(state => state.width);
@@ -35,8 +36,18 @@ const Dimension = () => {
             } else {
                 dispatch(setHeight({height: 259}));
             }
-            
-            dispatch(setStep({step: step+1}));
+
+            if (direction === 'forward') {
+                dispatch(setStep({
+                    step: step + 1,
+                    direction: 'forward'
+                }));
+            } else {
+                dispatch(setStep({
+                    step: step - 1,
+                    direction: 'backward'
+                }));
+            }           
         } else {
             if (skipLength.includes(cargoType)) {
                 setShowLength(false);
@@ -91,6 +102,7 @@ const Dimension = () => {
                                 className="form-control"
                                 value={ cargoLength }
                                 onChange={ inputChangeHandler }
+                                autoFocus
                             />
                             <div className="input-group-append">
                                 <span className="input-group-text">cm</span>
@@ -108,6 +120,7 @@ const Dimension = () => {
                                 className="form-control"
                                 value={ width }
                                 onChange={ inputChangeHandler }
+                                autoFocus
                             />
                             <div className="input-group-append">
                                 <span className="input-group-text">cm</span>
@@ -125,6 +138,7 @@ const Dimension = () => {
                                 className="form-control"
                                 value={ height }
                                 onChange={ inputChangeHandler }
+                                autoFocus
                             />
                             <div className="input-group-append">
                                 <span className="input-group-text">cm</span>
@@ -142,6 +156,7 @@ const Dimension = () => {
                                 className="form-control"
                                 value={ diameter }
                                 onChange={ inputChangeHandler }
+                                autoFocus
                             />
                             <div className="input-group-append">
                                 <span className="input-group-text">cm</span>

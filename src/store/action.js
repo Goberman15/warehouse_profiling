@@ -16,6 +16,7 @@ export const SET_CART_ID = 'SET_CART_ID';
 export const SET_CART_ITEM = 'SET_CART_ITEM';
 export const SET_STICKER_LABEL = 'SET_STICKER_LABEL';
 export const SET_WRAPPING = 'SET_WRAPPING';
+export const SET_LOADING_STATUS = 'SET_LOADING_STATUS';
 
 export const ADD_NEW_CART = 'ADD_NEW_CART';
 
@@ -133,6 +134,13 @@ export const setSTickerLabel = payload => {
     }
 }
 
+export const setLoadingStatus = payload => {
+    return {
+        type: SET_LOADING_STATUS,
+        payload
+    }
+}
+
 export const appendNewCart = payload => {
     return {
         type: ADD_NEW_CART,
@@ -148,6 +156,7 @@ export const resetInput = () => {
 
 export const getCartList = () => {
     return dispatch => {
+        dispatch(setLoadingStatus({isLoading: true}));
         server.get('/carts')
         .then(({ data }) => {
             const { carts } = data;
@@ -159,11 +168,15 @@ export const getCartList = () => {
         .catch(err => {
             console.error(err);
         })
+        .finally(() => {
+            dispatch(setLoadingStatus({isLoading: false}));
+        })
     }
 }
 
 export const addNewCart = () => {
     return dispatch => {
+        dispatch(setLoadingStatus({isLoading: true}));
         server.post('/carts')
         .then(({ data }) => {
             const { cart } = data;
@@ -175,12 +188,15 @@ export const addNewCart = () => {
         .catch(err => {
             console.error(err);
         })
+        .finally(() => {
+            dispatch(setLoadingStatus({isLoading: false}));
+        })
     }
 }
 
 export const getCartItem = payload => {
-    console.log(payload)
     return dispatch => {
+        dispatch(setLoadingStatus({isLoading: true}));
         server.get(`/carts/${payload}`)
         .then(({ data }) => {
             const { items } = data;
@@ -191,6 +207,9 @@ export const getCartItem = payload => {
         })
         .catch(err => {
             console.error(err);
+        })
+        .finally(() => {
+            dispatch(setLoadingStatus({isLoading: false}));
         })
     }
 }
