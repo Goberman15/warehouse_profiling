@@ -2,7 +2,7 @@ export function stackPerBin (type, height, diameter) {
     const twoStack = ['Pallet'];
     const threeStack = ['Container 40 ft.', 'Container HC 40 ft.'];
     const fourStack = ['Container 20 ft.', 'Container HC 20 ft.'];
-    const threeHundred = ['Tyres A (Stack Position)', 'Box'];
+    const threeHundred = ['Tyre A (Stack Position)', 'Box'];
     const twoHundred = ['Pipe'];
     const hundredAndFiftyHeight = ['Plate', 'H-Beam'];
     const hundredAndFiftyDiameter = ['Steel Bars'];
@@ -22,6 +22,6 @@ export function stackPerBin (type, height, diameter) {
     } else if (hundredAndFiftyDiameter.includes(type)) {
         return Math.ceil(150/diameter);
     } else {
-        return null;
+        return '';
     }
 }

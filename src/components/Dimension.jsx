@@ -18,8 +18,8 @@ const Dimension = () => {
     const [showDiameter, setShowDiameter] = useState(false);
 
     const skipLength = ["Tyre A (Stack Position)", "Tyre B (Non Stack)"];
-    const skipWidth = ["Tyre A (Stack Position)", "Tyre B (Non Stack)", "Pipe", "Steel Bars"];
-    const skipHeight = ["Pallet", "Pipe", "Chain", "Steel Bars"];
+    const skipWidth = ["Tyre A (Stack Position)", "Pipe", "Steel Bars"];
+    const skipHeight = ["Tyre B (Non Stack)", "Pallet", "Pipe", "Chain", "Steel Bars"];
     const unskipDiameter = ["Tyre A (Stack Position)", "Tyre B (Non Stack)", "Pipe", "Steel Bars"];
 
     useEffect(() => {
@@ -102,6 +102,7 @@ const Dimension = () => {
                                 className="form-control"
                                 value={ cargoLength }
                                 onChange={ inputChangeHandler }
+                                placeholder="Item Length"
                                 autoFocus
                             />
                             <div className="input-group-append">
@@ -112,7 +113,7 @@ const Dimension = () => {
                 }
                 {showWidth &&
                     <div className="col-3 mx-auto">
-                        <label htmlFor="width">Width</label>
+                        <label htmlFor="width">{cargoType.includes('Tyre B') ? 'Thickness' : 'Width'}</label>
                         <div className="input-group mb-3 justify-content-center">
                             <input
                                 type="number"
@@ -120,6 +121,7 @@ const Dimension = () => {
                                 className="form-control"
                                 value={ width }
                                 onChange={ inputChangeHandler }
+                                placeholder={cargoType.includes('Tyre B') ? 'Item Thickness' : 'Item Width'}
                                 autoFocus
                             />
                             <div className="input-group-append">
@@ -130,7 +132,7 @@ const Dimension = () => {
                 }
                 {showHeight &&
                     <div className="col-3 mx-auto">
-                        <label htmlFor="height">Height</label>
+                        <label htmlFor="height">{cargoType.includes('Tyre A') ? 'Thickness' : 'Height'}</label>
                         <div className="input-group mb-3 justify-content-center">
                             <input
                                 type="number"
@@ -138,6 +140,7 @@ const Dimension = () => {
                                 className="form-control"
                                 value={ height }
                                 onChange={ inputChangeHandler }
+                                placeholder={cargoType.includes('Tyre A') ? 'Item Thickness' : 'Item Height'}
                                 autoFocus
                             />
                             <div className="input-group-append">
@@ -156,6 +159,7 @@ const Dimension = () => {
                                 className="form-control"
                                 value={ diameter }
                                 onChange={ inputChangeHandler }
+                                placeholder="Item Diameter"
                                 autoFocus
                             />
                             <div className="input-group-append">

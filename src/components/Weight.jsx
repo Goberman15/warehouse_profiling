@@ -20,11 +20,12 @@ const Weight = () => {
             <label htmlFor="weight" className="input-title">Weight</label>
             <div class="input-group mb-3 justify-content-center w-100">
                 <input
-                    type="text"
+                    type="number"
                     className="form-control col-3"
                     name="weight"
                     value={ weight }
                     onChange={ inputChangeHandler }
+                    placeholder="Item Weight"
                     autoFocus
                 />
                 <div class="input-group-append">

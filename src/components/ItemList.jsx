@@ -1,11 +1,13 @@
 import React, { useEffect, createRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useParams } from 'react-router-dom';
-import { getCartItem, setCartId } from '../store/action';
+import { deleteItem, getCartItem, setCartId } from '../store/action';
 import accounting from 'accounting-js';
 import Pdf from "react-to-pdf";
 import Loader from 'react-loader-spinner';
 import '../styles/ItemList.css';
+import server from '../api';
+import { toast } from 'react-toastify';
 
 const ItemList = () => {
     const dispatch = useDispatch();
@@ -33,6 +35,22 @@ const ItemList = () => {
         history.push('/input');
     }
 
+    const removeItem = (event, id) => {
+        event.stopPropagation();
+
+        server.delete(`/warehouses/${id}`)
+        .then(({ data }) => {
+            const { message } = data;
+            toast.success(message);
+
+            dispatch(deleteItem({id}))
+
+        })
+        .catch(err => {
+            toast.error(err.response.data.error);
+        })
+    }
+
     return (
         <div className="list-item">
             <h3 className="list-item-head">List Item</h3>
@@ -55,7 +73,7 @@ const ItemList = () => {
                         <th style={{width: '5%'}}>Cost</th>
                         <th style={{width: '5%'}}>Added Cost</th>
                         <th style={{width: '5%'}}>Total Cost</th>
-                        {/* <th style={{width: '2%'}}>Action</th> */}
+                        <th style={{width: '2%'}}>Action</th>
                     </tr>
                 </thead>
                 {!isLoading &&
@@ -73,14 +91,14 @@ const ItemList = () => {
                                     <td>{accounting.formatMoney(+item.cost, { symbol: 'Rp ', precision: 0, thousand: '.', decimal: ',' })}</td>
                                     <td>{accounting.formatMoney(+item.added_cost, { symbol: 'Rp ', precision: 0, thousand: '.', decimal: ',' })}</td>
                                     <td>{accounting.formatMoney(+item.total_cost, { symbol: 'Rp ', precision: 0, thousand: '.', decimal: ',' })}</td>
-                                    {/* <td rowSpan="2">
-                                        <button className="btn btn-success btn-sm mr-2">
+                                    <td>
+                                        <button className="btn btn-success btn-sm mr-2" onClick={(event) => removeItem(event, item.id)}>
                                             <span><i className="fas fa-trash"></i></span>
                                         </button>
-                                    </td> */}
+                                    </td>
                                 </tr>
                                 <tr>
-                                    <td colSpan="9">
+                                    <td colSpan="10">
                                         <div className="row">
                                             <div className="col d-flex flex-column align-items-start">
                                                 <p className="sub-head">Reccommendation:</p>

@@ -19,11 +19,12 @@ const Quantity = () => {
         <div className="full-width container">
             <label htmlFor="quantity" className="input-title">Quantity</label>
             <input
-                type="text"
+                type="number"
                 className="form-control col-3 mx-auto"
                 name="quantity"
                 value={ quantity }
                 onChange={ inputChangeHandler }
+                placeholder="Item Quantity"
                 autoFocus
             />
         </div>

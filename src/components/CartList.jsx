@@ -1,11 +1,13 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import { addNewCart, getCartList, setCartId } from '../store/action';
+import { addNewCart, deleteCart, getCartList, setCartId, setLoadingStatus } from '../store/action';
 import moment from 'moment-timezone';
 import accounting from 'accounting-js';
 import Loader from 'react-loader-spinner';
 import '../styles/CartList.css';
+import server from '../api';
+import { toast } from 'react-toastify';
 
 const CartList = () => {
     const dispatch = useDispatch();
@@ -26,6 +28,22 @@ const CartList = () => {
         history.push('/input');
     }
 
+    const removeCart = (event, id) => {
+        event.stopPropagation();
+        
+        server.delete(`/carts/${id}`)
+        .then(({ data }) => {
+            const { message } = data;
+            toast.success(message);
+
+            dispatch(deleteCart({id}))
+
+        })
+        .catch(err => {
+            toast.error(err.response.data.error);
+        })
+    }
+
     useEffect(() => {
         dispatch(getCartList());
     },[])
@@ -39,18 +57,18 @@ const CartList = () => {
             <table className="table table-hover table-bordered" style={{width: '90%'}}>
                 <thead className="thead-dark">
                     <tr>
-                        <th style={{width: '8%'}}>Id No.</th>
-                        <th style={{width: '22%'}}>Total items</th>
-                        <th style={{width: '25%'}}>Total Prices</th>
+                        <th style={{width: '5%'}}>#</th>
+                        <th style={{width: '18%'}}>Total items</th>
+                        <th style={{width: '22%'}}>Total Prices</th>
                         <th style={{width: '25%'}}>Created At</th>
-                        <th style={{width: '20%'}}>Actions</th>
+                        <th style={{width: '30%'}}>Actions</th>
                     </tr>
                 </thead>
                 {!isLoading &&
                     <tbody>
-                        {cartList.map(cart => (
+                        {cartList.map((cart, idx) => (
                             <tr key={cart.id}>
-                                <td>{cart.id}</td>
+                                <td>{idx+1}</td>
                                 <td>{cart.total_items}</td>
                                 <td>{accounting.formatMoney(+cart.total_price, { symbol: 'Rp ', precision: 0, thousand: '.', decimal: ',' })}</td>
                                 <td>{moment(cart.createdAt).tz('Asia/Jakarta').format('dddd, DD MMMM YYYY')}</td>
@@ -62,10 +80,13 @@ const CartList = () => {
                                         <span><i className="fas fa-plus"></i>{' '}Add Item</span>
                                     </button>
                                     <button
-                                        className="btn btn-primary btn-sm ml-2"
+                                        className="btn btn-primary btn-sm"
                                         onClick={() => history.push(`/list-item/${cart.id}`)}    
                                     >
                                         <span><i className="fas fa-list"></i>{' '}See Items</span>
+                                    </button>
+                                    <button className="btn btn-primary btn-sm ml-2" onClick={(event) => removeCart(event, cart.id)}>
+                                        <span><i className="fas fa-trash"></i>{' '}Delete Cart</span>
                                     </button>
                                 </td>
                             </tr>

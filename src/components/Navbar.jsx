@@ -15,20 +15,6 @@ const Navbar = () => {
                 height="80"
                 />
             </span>
-            {/* <div className="mx-auto">
-                <h1>Warehouse Project</h1>
-            </div>
-            <div style={{width: '25px'}}>
-                <span>{' '}</span>
-            </div> */}
-            {/* <div className="nav justify-content-end">
-                <div className="nav-item">
-                <span className="nav-link text-light" onClick={ toMovieList }>Movie List</span>
-                </div>
-                <div className="nav-item">
-                <span className="nav-link text-light" onClick={ toWatchlist }>My Watchlist</span>
-                </div>
-            </div> */}
         </div>
     );
 }

@@ -8,3 +8,7 @@
     margin: 0;
     padding: 0;
 }
+
+.navbar-brand:hover {
+    cursor: pointer;
+}

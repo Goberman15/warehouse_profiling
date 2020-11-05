@@ -2,6 +2,8 @@ import { createStore, applyMiddleware, compose } from 'redux';
 import thunkMiddleware from 'redux-thunk';
 import {
     ADD_NEW_CART,
+    DELETE_CART,
+    DELETE_ITEM,
     RESET_INPUT,
     SET_CARGO_TYPE,
     SET_CART_ID,
@@ -30,13 +32,13 @@ const initialState = {
     cargoType: '',
     warehouseType: '',
     storageLocation: '',
-    cargoLength: 0,
-    width: 0,
-    height: 0,
-    diameter: 0,
-    dimension: 0,
-    quantity: 0,
-    weight: 0,
+    cargoLength: '',
+    width: '',
+    height: '',
+    diameter: '',
+    dimension: '',
+    quantity: '',
+    weight: '',
     wrapping: false,
     stickerLabel: false,
     cartList: [],
@@ -158,6 +160,18 @@ const reducer = (state = initialState, action) => {
                 ...state,
                 cartList: [...state.cartList, cart]
             }
+        case DELETE_CART:
+            const { id: deletedCartId } = payload;
+            return {
+                ...state,
+                cartList: state.cartList.filter(cart => cart.id !== deletedCartId)
+            }
+        case DELETE_ITEM:
+            const { id: deletedItemId } = payload;
+            return {
+                ...state,
+                itemList: state.itemList.filter(item => item.id !== deletedItemId)
+            }
         case RESET_INPUT:
             return {
                 ...state,
@@ -165,13 +179,13 @@ const reducer = (state = initialState, action) => {
                 cargoType: '',
                 warehouseType: '',
                 storageLocation: '',
-                cargoLength: 0,
-                width: 0,
-                height: 0,
-                diameter: 0,
-                dimension: 0,
-                quantity: 0,
-                weight: 0,
+                cargoLength: '',
+                width: '',
+                height: '',
+                diameter: '',
+                dimension: '',
+                quantity: '',
+                weight: '',
                 wrapping: false,
                 stickerLabel: false
             }

@@ -1,3 +1,4 @@
+import { toast } from 'react-toastify';
 import server from '../api';
 
 export const SET_STEP = 'SET_STEP';
@@ -21,6 +22,9 @@ export const SET_LOADING_STATUS = 'SET_LOADING_STATUS';
 export const ADD_NEW_CART = 'ADD_NEW_CART';
 
 export const RESET_INPUT = 'RESET_INPUT';
+
+export const DELETE_CART = 'DELETE_CART';
+export const DELETE_ITEM = 'DELETE_ITEM';
 
 export const setStep = payload => {
     return {
@@ -154,6 +158,20 @@ export const resetInput = () => {
     }
 }
 
+export const deleteCart = payload => {
+    return {
+        type: DELETE_CART,
+        payload
+    }
+}
+
+export const deleteItem = payload => {
+    return {
+        type: DELETE_ITEM,
+        payload
+    }
+}
+
 export const getCartList = () => {
     return dispatch => {
         dispatch(setLoadingStatus({isLoading: true}));
@@ -166,7 +184,8 @@ export const getCartList = () => {
             }))
         })
         .catch(err => {
-            console.error(err);
+            console.error(err.response);
+            toast.error(err.response.data.error);
         })
         .finally(() => {
             dispatch(setLoadingStatus({isLoading: false}));
@@ -176,20 +195,23 @@ export const getCartList = () => {
 
 export const addNewCart = () => {
     return dispatch => {
-        dispatch(setLoadingStatus({isLoading: true}));
+        // dispatch(setLoadingStatus({isLoading: true}));
         server.post('/carts')
         .then(({ data }) => {
-            const { cart } = data;
+            const { cart, message } = data;
 
             dispatch(appendNewCart({
                 cart
             }))
+
+            toast.success(message);
         })
         .catch(err => {
-            console.error(err);
+            console.error(err.response);
+            toast.error(err.response.data.error);
         })
         .finally(() => {
-            dispatch(setLoadingStatus({isLoading: false}));
+            // dispatch(setLoadingStatus({isLoading: false}));
         })
     }
 }
@@ -206,7 +228,8 @@ export const getCartItem = payload => {
             }))
         })
         .catch(err => {
-            console.error(err);
+            console.error(err.response);
+            toast.error(err.response.data.error);
         })
         .finally(() => {
             dispatch(setLoadingStatus({isLoading: false}));
