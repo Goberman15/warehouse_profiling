@@ -2,16 +2,31 @@
 
 .App {
   text-align: center;
+  background-color: #EDEDED;
   padding: 10px;
-  background-color: #67dab1;
+  /* background-color: #67dab1; */
   height: 100vh;
   width: 100%;
   overflow: auto;
   font-family: 'Noto Sans JP', sans-serif;
 }
 
+th {
+  background-color: #005F41 !important;
+}
+
+.table-bordered td,
+.table-bordered th {
+  border: 1px solid #005F41
+}
+
 td {
   font-weight: 500;
+}
+
+.btn-success {
+  background-color: #005F41;
+  border-color: #005F41;
 }
 
 .App-logo {

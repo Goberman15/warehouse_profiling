@@ -9,6 +9,7 @@ import { useSelector } from 'react-redux';
 import { ToastContainer } from'react-toastify';
 import Form from './components/Form.jsx';
 import Navbar from './components/Navbar.jsx';
+import Landing from './components/Landing.jsx';
 import CartList from './components/CartList.jsx';
 import ItemList from './components/ItemList.jsx';
 import './App.css';
@@ -17,6 +18,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   const cartId = useSelector(state => state.cartId);
+  const isLoggedIn = useSelector(state => state.isLoggedIn);
 
   return (
     <div className="App">
@@ -29,11 +31,22 @@ function App() {
         />
 
         <Switch>
-          <Route exact path="/" component={CartList}/>
-          <Route path="/input">
-            {cartId ? <Form /> : <Redirect to="/"/>}
+          <Route exact path="/">
+            {isLoggedIn ? <Redirect to="/inquiries" /> : <Landing />}  
           </Route>
-          <Route path="/list-item/:id" component={ItemList}/>
+          <Route path="/inquiries">
+            {!isLoggedIn ? <Redirect to="/" /> : <CartList />}
+          </Route>
+          <Route path="/input">
+            {!cartId
+             ? <Redirect to="/inquiries"/>
+             : !isLoggedIn
+             ? <Redirect to="/" />
+             : <Form />}
+          </Route>
+          <Route path="/list-item/:id">
+            {!isLoggedIn ? <Redirect to="/" /> : <ItemList />}
+          </Route>
         </Switch>
 
       </Router>

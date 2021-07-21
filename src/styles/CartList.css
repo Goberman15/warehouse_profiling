@@ -15,3 +15,11 @@
 .w-90 {
     width: 90%
 }
+
+.list-inquiry tr {
+    min-height: 100%;
+}
+
+.list-inquiry td {
+    vertical-align: middle;
+}

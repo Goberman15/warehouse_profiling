@@ -18,6 +18,7 @@ export const SET_CART_ITEM = 'SET_CART_ITEM';
 export const SET_STICKER_LABEL = 'SET_STICKER_LABEL';
 export const SET_WRAPPING = 'SET_WRAPPING';
 export const SET_LOADING_STATUS = 'SET_LOADING_STATUS';
+export const SET_LOGIN_STATUS = 'SET_LOGIN_STATUS';
 
 export const ADD_NEW_CART = 'ADD_NEW_CART';
 
@@ -145,6 +146,13 @@ export const setLoadingStatus = payload => {
     }
 }
 
+export const setLoginStatus = payload => {
+    return {
+        type: SET_LOGIN_STATUS,
+        payload
+    }
+}
+
 export const appendNewCart = payload => {
     return {
         type: ADD_NEW_CART,
@@ -173,9 +181,14 @@ export const deleteItem = payload => {
 }
 
 export const getCartList = () => {
+    const { token } = localStorage;
     return dispatch => {
         dispatch(setLoadingStatus({isLoading: true}));
-        server.get('/carts')
+        server.get('/carts', {
+            headers: {
+                token
+            }
+        })
         .then(({ data }) => {
             const { carts } = data;
 
@@ -194,9 +207,14 @@ export const getCartList = () => {
 }
 
 export const addNewCart = () => {
+    const { token } = localStorage;
     return dispatch => {
         // dispatch(setLoadingStatus({isLoading: true}));
-        server.post('/carts')
+        server.post('/carts', {}, {
+            headers: {
+                token
+            }
+        })
         .then(({ data }) => {
             const { cart, message } = data;
 
@@ -217,15 +235,22 @@ export const addNewCart = () => {
 }
 
 export const getCartItem = payload => {
+    const { token } = localStorage;
     return dispatch => {
         dispatch(setLoadingStatus({isLoading: true}));
-        server.get(`/carts/${payload}`)
+        return server.get(`/carts/${payload}`, {
+            headers: {
+                token
+            }
+        })
         .then(({ data }) => {
             const { items } = data;
 
             dispatch(setCartItem({
                 items
             }))
+
+            return items;
         })
         .catch(err => {
             console.error(err.response);

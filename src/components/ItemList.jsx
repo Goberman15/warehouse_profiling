@@ -1,29 +1,24 @@
-import React, { useEffect, createRef } from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useParams } from 'react-router-dom';
 import { deleteItem, getCartItem, setCartId } from '../store/action';
 import accounting from 'accounting-js';
-import Pdf from "react-to-pdf";
 import Loader from 'react-loader-spinner';
 import '../styles/ItemList.css';
 import server from '../api';
 import { toast } from 'react-toastify';
+import { pdfGenerator } from '../helpers/pdfMaker.js';
 
 const ItemList = () => {
     const dispatch = useDispatch();
     const { id } = useParams();
     const itemList = useSelector(state => state.itemList);
     const isLoading = useSelector(state => state.isLoading);
-    let history = useHistory()
+    let history = useHistory();
+    let blcCount = 0;
+    let hubCount = 0;
 
-    const ref = createRef();
-
-    const options = {
-        orientation: 'landscape',
-        format: [885, 630]
-    }
-
-    useEffect(() => {
+      useEffect(() => {
         dispatch(getCartItem(id));
     }, [])
 
@@ -37,8 +32,13 @@ const ItemList = () => {
 
     const removeItem = (event, id) => {
         event.stopPropagation();
+        const { token } = localStorage;
 
-        server.delete(`/warehouses/${id}`)
+        server.delete(`/warehouses/${id}`, {
+            headers: {
+                token
+            }
+        })
         .then(({ data }) => {
             const { message } = data;
             toast.success(message);
@@ -60,7 +60,7 @@ const ItemList = () => {
                     onClick={addAnotherItem}
                 >Add Item to Cart</button>
             </div>
-            <table className="table table-bordered" ref={ref}>
+            <table className="table table-bordered">
                 <thead className="thead-dark">
                     <tr>
                         <th style={{width: '2%'}}>No</th>
@@ -77,8 +77,12 @@ const ItemList = () => {
                     </tr>
                 </thead>
                 {!isLoading &&
+                <>
                     <tbody>
-                        {itemList.map((item, idx) => (
+                        {itemList.map((item, idx) => {
+                            if (item.warehouse_type === 'BLC') blcCount++;
+                            else hubCount++;
+                            return (
                             <>
                                 <tr>
                                     <td rowSpan="2">{idx+1}</td>
@@ -110,6 +114,7 @@ const ItemList = () => {
                                                 <p className="sub-head">Additional Information:</p>
                                                 <p>Total Stack: {item.stack_per_bin || '-'}</p>
                                                 <p>Total Pallet: {item.total_pallet || '-'}</p>
+                                                <p>Consumption Storage: {Math.ceil(Number(item.consumption_storage))}</p>
                                                 <p>Added Services: {item.added_services || '-'}</p>
                                             </div>
                                             
@@ -117,8 +122,9 @@ const ItemList = () => {
                                     </td>
                                 </tr>
                             </>
-                        ))}
+                        )})}
                     </tbody>
+                </>
                 }
             </table>
             {isLoading &&
@@ -129,11 +135,16 @@ const ItemList = () => {
                     width={80}
                 />
             }
-            <div className="d-flex justify-content-end w-100">
-                <Pdf targetRef={ref} filename="code-example.pdf" options={options}>
-                    {({ toPdf }) => <button className="btn btn-primary" onClick={toPdf}>Generate Pdf</button>}
-                </Pdf>
-            </div>
+            {!isLoading &&
+                <div className="d-flex justify-content-end w-100">
+                    {!!blcCount &&
+                        <button className="btn btn-primary m-2" onClick={() => pdfGenerator(itemList, id, 'BLC')}>Generate PDF for BLC</button>
+                    }
+                    {!!hubCount &&
+                        <button className="btn btn-primary m-2" onClick={() => pdfGenerator(itemList, id, 'NON-BLC')}>Generate PDF for NON-BLC</button>
+                    }
+                </div>
+            }
         </div>
     );
 }

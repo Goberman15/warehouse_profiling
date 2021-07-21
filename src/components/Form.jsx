@@ -81,6 +81,10 @@ const Form = () => {
             wrapping,
             stickerLabel,
             cartId
+        }, {
+            headers: {
+                token: localStorage.token
+            }
         })
         .then(({ data }) => {
             const { message } = data;
@@ -156,15 +160,16 @@ const Form = () => {
                         onClick={() => changeStep(step-1, 'backward')}
                     >Back</button>
                     }
-                    {((step !== 7 && addService.includes(cargoType) && warehouseType === 'NON-PLB')
-                    || (step !== 6 && (!addService.includes(cargoType) || warehouseType !== 'NON-PLB'))) &&
+                    {(((step !== 7 && addService.includes(cargoType) && warehouseType === 'NON-BLC')
+                    || (step !== 6 && (!addService.includes(cargoType) || warehouseType !== 'NON-BLC'))) 
+                    && step !== 1) &&
                     <button
                         className="btn btn-success ml-auto px-5"
                         onClick={() => changeStep(step+1, 'forward')}
                     >Next</button>
                     }
-                    {((step === 7 && addService.includes(cargoType) && warehouseType === 'NON-PLB') 
-                    || (step === 6 && (!addService.includes(cargoType) || warehouseType !== 'NON-PLB'))) &&
+                    {((step === 7 && addService.includes(cargoType) && warehouseType === 'NON-BLC') 
+                    || (step === 6 && (!addService.includes(cargoType) || warehouseType !== 'NON-BLC'))) &&
                     <button
                         className="btn btn-success ml-auto px-5"
                         onClick={ calculateInput }

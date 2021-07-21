@@ -12,7 +12,7 @@ const StorageLocation = () => {
     const skipStep = ['Tyre B (Non Stack)', 'Container 20 ft.', 'Container 40 ft.', 'Container HC 20 ft.', 'Container HC 40 ft.', 'Heavy Equipment'];
 
     useEffect(() => {
-        if (skipStep.includes(cargoType) || (cargoType === 'Parts' && warehouseType === 'NON-PLB')) {
+        if (skipStep.includes(cargoType) || (cargoType === 'Parts' && warehouseType === 'NON-BLC')) {
             if (direction === 'forward') {
                 dispatch(setStep({
                     step: step + 1,
@@ -52,7 +52,6 @@ const StorageLocation = () => {
                     onClick={() => chooseStorageLocation('Cover Yard')}>Cover Yard
                 </button>
             </div>
-            
         </div>
     );
 }

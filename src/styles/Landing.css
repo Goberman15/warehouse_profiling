@@ -1,0 +1,25 @@
+.landing-page {
+    height: 100vh;
+}
+
+.logo-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #005F41;
+    overflow: auto;
+    margin: -10px 0;
+}
+
+.form-container {
+    height: 100vh;
+}
+
+.form-text-head {
+    font-size: 40px;
+    font-weight: 600;
+}
+
+.form-text {
+    font-weight: 500;
+}

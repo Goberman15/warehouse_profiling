@@ -14,6 +14,7 @@ import {
     SET_HEIGHT,
     SET_LENGTH,
     SET_LOADING_STATUS,
+    SET_LOGIN_STATUS,
     SET_QUANTITY,
     SET_STEP,
     SET_STICKER_LABEL,
@@ -27,6 +28,7 @@ import cargo from './cargoType.json';
 
 const initialState = {
     step: 1,
+    isLoggedIn: false,
     direction: '',
     isLoading: false,
     cargoType: '',
@@ -153,6 +155,12 @@ const reducer = (state = initialState, action) => {
             return {
                 ...state,
                 isLoading
+            }
+        case SET_LOGIN_STATUS:
+            const { isLoggedIn } = payload;
+            return {
+                ...state,
+                isLoggedIn
             }
         case ADD_NEW_CART:
             const { cart } = payload;

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setCargoType } from '../store/action';
+import { resetInput, setCargoType, setStep } from '../store/action';
 import arr from '../helpers/pictureArray.js';
 import '../styles/CargoType.css';
 
@@ -13,8 +13,12 @@ const CargoType = () => {
         const payload = {
             cargoType: cargo
         };
-
+        dispatch(resetInput());
         dispatch(setCargoType(payload));
+        dispatch(setStep({
+            step: 2,
+            direction: 'forward'
+        }));
     }
 
     return (
